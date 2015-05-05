@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.cmactions;
+package com.cyanogenmod.settings.device;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 public class ScreenReceiver extends BroadcastReceiver {
-    private ScreenStateNotifier mNotifier;
+    private final ScreenStateNotifier mNotifier;
 
     public ScreenReceiver(Context context, ScreenStateNotifier notifier) {
         mNotifier = notifier;

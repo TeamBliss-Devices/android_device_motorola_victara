@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.cmactions;
+package com.cyanogenmod.settings.device;
 
 import java.util.List;
 import java.io.FileOutputStream;
@@ -39,8 +39,8 @@ public class SensorHelper {
 
     private static final int BATCH_LATENCY_IN_MS = 100;
 
-    private Context mContext;
-    private SensorManager mSensorManager;
+    private final Context mContext;
+    private final SensorManager mSensorManager;
 
     public SensorHelper(Context context) {
         mContext = context;

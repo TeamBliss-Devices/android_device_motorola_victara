@@ -52,9 +52,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp
 
+PRODUCT_CHARACTERISTICS := nosdcard
+
 # Screen density
-PRODUCT_AAPT_CONFIG := normal hdpi xhdpi
-PRODUCT_AAPT_PREF_CONFIG := xhdpi
+PRODUCT_AAPT_CONFIG := normal
+PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 # Boot animation
 TARGET_SCREEN_HEIGHT := 1920
@@ -85,7 +87,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/audio/audio_effects.conf:system/vendor/etc/audio_effects.conf \
     $(LOCAL_PATH)/audio/audio_platform_info.xml:system/etc/audio_platform_info.xml \
     $(LOCAL_PATH)/audio/audio_policy.conf:system/etc/audio_policy.conf \
-    $(LOCAL_PATH)/configs/mixer_paths.xml:system/etc/mixer_paths.xml
+    $(LOCAL_PATH)/audio/mixer_paths.xml:system/etc/mixer_paths.xml
 
 # Camera
 PRODUCT_PACKAGES += \
@@ -228,13 +230,11 @@ PRODUCT_PACKAGES += \
     dhcpcd.conf \
     hostapd \
     hostapd_default.conf \
+    hostapd.accept \
+    hostapd.deny \
     libwpa_client \
     wcnss_service \
     wpa_supplicant
-
-# HACK for QC errata issue
-PRODUCT_PROPERTY_OVERRIDES += \
-    debug.hwui.render_dirty_regions=false
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
@@ -248,4 +248,5 @@ PRODUCT_COPY_FILES += \
 
 # CMActions
 PRODUCT_PACKAGES += \
-    CMActions
+    CMActions \
+    libjni_CMActions

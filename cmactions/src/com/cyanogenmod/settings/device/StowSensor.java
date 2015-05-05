@@ -14,49 +14,59 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.cmactions;
+package com.cyanogenmod.settings.device;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.util.Log;
 
-public class StowSensor implements ActionableSensor, SensorEventListener {
+public class StowSensor implements ScreenStateNotifier, SensorEventListener {
     private static final String TAG = "CMActions-StowSensor";
 
-    private SensorHelper mSensorHelper;
-    private State mState;
-    private SensorAction mSensorAction;
+    private final CMActionsSettings mCMActionsSettings;
+    private final SensorHelper mSensorHelper;
+    private final SensorAction mSensorAction;
+    private final Sensor mSensor;
 
-    private Sensor sensor;
+    private boolean mEnabled;
+    private boolean mLastStowed;
 
-    public StowSensor(SensorHelper sensorHelper, State state, SensorAction action) {
+    public StowSensor(CMActionsSettings cmActionsSettings, SensorHelper sensorHelper,
+                SensorAction action) {
+        mCMActionsSettings = cmActionsSettings;
         mSensorHelper = sensorHelper;
-        mState = state;
         mSensorAction = action;
 
-        sensor = sensorHelper.getStowSensor();
+        mSensor = sensorHelper.getStowSensor();
     }
 
     @Override
-    public void enable() {
-        Log.d(TAG, "Enabling");
-        mSensorHelper.registerListener(sensor, this);
+    public void screenTurnedOn() {
+        if (mEnabled) {
+            Log.d(TAG, "Disabling");
+            mSensorHelper.unregisterListener(this);
+            mEnabled = false;
+        }
     }
 
     @Override
-    public void disable() {
-        Log.d(TAG, "Disabling");
-        mSensorHelper.unregisterListener(this);
+    public void screenTurnedOff() {
+        if (mCMActionsSettings.isPickUpEnabled() && !mEnabled) {
+            Log.d(TAG, "Enabling");
+            mSensorHelper.registerListener(mSensor, this);
+            mEnabled = true;
+        }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         boolean thisStowed = (event.values[0] != 0);
         Log.d(TAG, "event: " + thisStowed);
-        if (mState.setIsStowed(thisStowed) && ! thisStowed) {
+        if (mLastStowed && ! thisStowed) {
             mSensorAction.action();
         }
+        mLastStowed = thisStowed;
     }
 
     @Override

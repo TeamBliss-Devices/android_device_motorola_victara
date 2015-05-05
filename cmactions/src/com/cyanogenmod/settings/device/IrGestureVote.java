@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.cmactions;
+package com.cyanogenmod.settings.device;
 
-interface SensorAction {
-    public void action();
+public class IrGestureVote {
+    private final IrGestureManager mIrGestureManager;
+
+    private int mLastFlags;
+
+    public IrGestureVote(IrGestureManager irGestureManager) {
+        mIrGestureManager = irGestureManager;
+    }
+
+    public void voteForSensors(int flags) {
+        mIrGestureManager.updateState(mLastFlags, flags);
+        mLastFlags = flags;
+    }
+
+    protected void finalize() {
+        voteForSensors(0);
+    }
 }

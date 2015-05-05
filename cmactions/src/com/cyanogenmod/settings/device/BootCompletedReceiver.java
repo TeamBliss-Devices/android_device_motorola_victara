@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.cmactions;
+package com.cyanogenmod.settings.device;
 
-import org.cyanogenmod.cmactions.ServiceWrapper.LocalBinder;
+import com.cyanogenmod.settings.device.ServiceWrapper.LocalBinder;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     static final String TAG = "CMActions";
-    private ServiceWrapper serviceWrapper;
+    private ServiceWrapper mServiceWrapper;
 
     @Override
     public void onReceive(final Context context, Intent intent) {
         Log.i(TAG, "Booting");
+        enableComponent(context, TouchscreenGestureSettings.class.getName());
         context.startService(new Intent(context, ServiceWrapper.class));
     }
 
@@ -40,13 +42,24 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             LocalBinder binder = (LocalBinder) service;
-            serviceWrapper = binder.getService();
-            serviceWrapper.start();
+            mServiceWrapper = binder.getService();
+            mServiceWrapper.start();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
-            serviceWrapper = null;
+            mServiceWrapper = null;
         }
     };
+
+    private void enableComponent(Context context, String component) {
+        ComponentName name = new ComponentName(context, component);
+        PackageManager pm = context.getPackageManager();
+        if (pm.getComponentEnabledSetting(name)
+                == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+            pm.setComponentEnabledSetting(name,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
+    }
 }
